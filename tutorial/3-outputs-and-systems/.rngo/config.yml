@@ -1,0 +1,42 @@
+namespace: tutorial
+systems:
+  db:
+    output:
+      format: csv
+    scripts:
+      import: |
+        PGPASSWORD="$RNGO_DB_PASSWORD" \
+        psql \
+          -h $RNGO_DB_HOST \
+          -p $RNGO_DB_PORT \
+          -U $RNGO_DB_USER \
+          -d $RNGO_DB_DATABASE \
+          -c "TRUNCATE {{table}} CASCADE;" \
+          -c "\\COPY {{table}} FROM {{dataFile}} CSV HEADER;"
+streams:
+  users:
+    systems:
+      db:
+        parameters:
+          table: users
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          rngo:
+            value: (streams.users.last.id ?? 0) + 1
+        full_name:
+          type: string
+          rngo:
+            value: enums.fullNames
+        created_at:
+          type: string
+          format: date-time
+          rngo:
+            value: sim.now
+      required:
+        - id
+        - full_name
+        - created_at
