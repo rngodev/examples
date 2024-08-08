@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: pw
+      POSTGRES_USER: rngo_tutorial
+      POSTGRES_DB: rngo_tutorial
+    ports:
+      - "5431:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
