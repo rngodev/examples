@@ -1,0 +1,24 @@
+namespace: tutorial
+streams:
+  users:
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          rngo:
+            value: (streams.users.last.id ?? 0) + 1
+        full_name:
+          type: string
+          rngo:
+            value: enums.fullNames
+        created_at:
+          type: string
+          format: date-time
+          rngo:
+            value: sim.now
+      required:
+        - id
+        - full_name
+        - created_at
