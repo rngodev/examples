@@ -1,0 +1,73 @@
+namespace: tutorial
+scenarios:
+  default:
+    seed: 2
+    start: daysAgo(10)
+systems:
+  db:
+    type: postgres
+streams:
+  users:
+    systems:
+      db: {}
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          rngo:
+            value: (streams.users.last.id ?? 0) + 1
+        full_name:
+          type: string
+          rngo:
+            value: enums.fullNames
+        created_at:
+          type: string
+          format: date-time
+          rngo:
+            value: sim.now
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - editor
+              - buyer
+              - engineer
+              - exec
+      required:
+        - id
+        - full_name
+        - created_at
+  posts:
+    systems:
+      db: {}
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+          rngo:
+            value: (streams.posts.last.id ?? 0) + 1
+        author_id:
+          type: integer
+          rngo:
+            value: streams.users.random.id
+        title:
+          type: string
+          maxLength: 512
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        published_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - author_id
+        - title
+        - body
+        - created_at
